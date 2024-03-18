@@ -7,14 +7,13 @@ const getTodos = () => {
   const router = useRouter();
 
   const todoId = computed(() => route.params.id)
-  //console.log("todoId: ", todoId.value)
+  console.log("todoId: ", todoId.value)
 
   const state = ref({
     newAuthor: '',
     newTodoItem: '',
     todos: {}
   })
-
 
 /**
  * Fetches all todo items from the server.
@@ -30,6 +29,7 @@ const getTodos = () => {
     } catch(error) {
       console.error(error);
     }
+    // Old way of fetching all todo items from the server. Promise based, less readable and maintainable. Leads to more nested callbacks.
     // try {  /* Promise chaining with .then() can sometimes lead to nested callbacks, which can make the code harder to follow and maintain */
     //    await fetch("http://localhost:3000/todos")
     //   .then(res => res.json())
@@ -79,32 +79,6 @@ const getTodos = () => {
     }
   }
   
-  /** chaining with promise. Can lead to more callbacks */
-  // const newTodo = () => { 
-  //   const requestOptions = {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json"
-  //       // "auth-token": state.token
-  //     },
-  //     body: JSON.stringify({
-  //       author: state.value.newAuthor,
-  //       todo: state.value.newTodoItem
-  //     }) 
-  //   }
-  //     fetch("http://localhost:3000/todos/new", 
-  //     requestOptions
-  //   ).then(GetAllTodos())
-  // }
-  
-
-
-
-  /* Improved error handling with async/await and try/catch blocks. Better readability and maintainability.
-   also uses template literals
-   */
-
-   /**
  /**
  * Deletes a todo item from the server.
  * @async
@@ -130,7 +104,6 @@ const getTodos = () => {
     }
   }
   
-
   /** cleanest, less code and error handling */
   // const deleteTodo = (_id) => {
   //   fetch("http://localhost:3000/todos/delete/" + _id, { method: "DELETE"})
@@ -138,65 +111,105 @@ const getTodos = () => {
   // }
 
 
+/**
+ * Test for handleEdit */ 
+const handleEditTodo = async () => {
+  try {
+    if (!todoId.value) throw new Error('Todo ID is missing');
 
+    await editTodo(todoId.value, {
+      author: state.value.newAuthor,
+      todo: state.value.newTodoItem
+    });
 
-  /**
- * Updates a todo item on the server.
- * @param {string} todoId - The ID of the todo item to update.
- * @returns {Promise<void>} A Promise that resolves once the todo item is successfully updated on the server.
- * @throws {Error} If there is an error during the update process.
- */
+    console.log('Todo item updated successfully');
+  } catch (error) {
+    console.error('Error updating todo:', error);
+  }
+}
 
-const editTodo = async (_id) => {
+const editTodo = async (_id, data) => {
   try {
     const requestOptions = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
-        // "auth-token": state.token
       },
-      body: JSON.stringify({
-        author: state.value.newAuthor,
-        todo: state.value.newTodoItem
-      }) 
+      body: JSON.stringify(data) 
     };
 
     const url = `http://localhost:3000/todos/update/${_id}`;
-
     const response = await fetch(url, requestOptions);
 
-    if (!response.ok) {
-      throw new Error("Failed to update todo");
-    }
+    if (!response.ok) throw new Error("Failed to update todo");
 
     router.push('/todos');
-  } 
-  catch (error) {
+  } catch (error) {
     console.error("Error updating todo:", error);
     throw error;
   }
 } 
 
-// const editTodo = () => { 
-//   const requestOptions = {
-//     method: "PUT",
-//     headers: {
-//       "Content-Type": "application/json"
-//       // "auth-token": state.token
-//     },
-//     body: JSON.stringify({
+
+// const handleEditTodo = async () => {
+//   try {
+//     // Ensure todoId is available
+ 
+//     if (!todoId.value) {
+//       throw new Error('Todo ID is missing')
+//     }
+
+//     // Call editTodo function to update todo item
+//     await editTodo(todoId.value, {
 //       author: state.value.newAuthor,
 //       todo: state.value.newTodoItem
-//     }) 
+//     })
+
+//     // Optionally, show success message to the user
+//     console.log('Todo item updated successfully')
+//   } catch (error) {
+//     console.error('Error updating todo:', error)
+//     // Optionally, show error message to the user
 //   }
-//   fetch("http://localhost:3000/todos/update/" + todoId.value, 
-//   requestOptions)
-//    // .then(GetAllTodos())
-//     .then(res =>  res.body ) // redundant
-//     .then(res => {console.log(res)}) // redundant
-//     router.push('/todos')
 // }
- // 
+
+
+//  /**
+//  * Updates a todo item on the server.
+//  * @param {string} todoId - The ID of the todo item to update.
+//  * @returns {Promise<void>} A Promise that resolves once the todo item is successfully updated on the server.
+//  * @throws {Error} If there is an error during the update process.
+//  */
+
+// const editTodo = async (_id) => {
+//   try {
+//     const requestOptions = {
+//       method: "PUT",
+//       headers: {
+//         "Content-Type": "application/json"
+//         // "auth-token": state.token
+//       },
+//       body: JSON.stringify({
+//         author: state.value.newAuthor,
+//         todo: state.value.newTodoItem
+//       }) 
+//     };
+
+//     const url = `http://localhost:3000/todos/update/${_id}`;
+
+//     const response = await fetch(url, requestOptions);
+
+//     if (!response.ok) {
+//       throw new Error("Failed to update todo");
+//     }
+
+//     router.push('/todos');
+//   } 
+//   catch (error) {
+//     console.error("Error updating todo:", error);
+//     throw error;
+//   }
+// } 
 
 
 /**
@@ -205,7 +218,7 @@ const editTodo = async (_id) => {
  * @returns {Promise<void>} A Promise that resolves once the specific todo item is successfully fetched from the server.
  * @throws {Error} If there is an error during the fetching process.
  */
-/* 
+
 const todo = ref({})
 
 const GetSpecificTodo = async (todoId) => {
@@ -233,22 +246,22 @@ const GetSpecificTodo = async (todoId) => {
     throw error;
   }
 }
- */
+ 
 
-
-  const todo = ref({})
-  const GetSpecificTodo = async () => {
-    try {
-      fetch("http://localhost:3000/todos")
-        .then(res =>  res.json() ) 
-        .then(data => {
-            todo.value = data.filter(t => t._id === todoId.value)
-        })
-    }
-    catch(error) {
-      console.log(error)
-    }
-  }
+  // Old way of fetching a specific todo item from the server. Promise based, less readable and maintainable. Leads to more nested callbacks.
+  // const todo = ref({})
+  // const GetSpecificTodo = async () => {
+  //   try {
+  //     fetch("http://localhost:3000/todos")
+  //       .then(res =>  res.json() ) 
+  //       .then(data => {
+  //           todo.value = data.filter(t => t._id === todoId.value)
+  //       })
+  //   }
+  //   catch(error) {
+  //     console.log(error)
+  //   }
+  // }
 
 
   return {
@@ -259,7 +272,8 @@ const GetSpecificTodo = async (todoId) => {
     GetAllTodos, 
     newTodo,
     deleteTodo,
-    editTodo
+    editTodo,
+    handleEditTodo
   }
 }
 

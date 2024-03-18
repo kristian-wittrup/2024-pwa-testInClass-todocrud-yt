@@ -2,13 +2,13 @@
   <div>
     <h1>Editing a ToDo</h1>
 
-    <div v-if="todo.length > 0">
-      Author: <h4>{{ todo[0].author }}</h4>
-      Todo Item: <p>{{ todo[0].todo }}</p>
+    <div v-if="!todo"> <!-- If todo is not available, show message -->
+      <p>Todo item not found</p>
     </div>
 
-    <div v-else>
-      <p>Todo item not found</p>
+    <div v-else> <!-- If todo is available, show todo item -->
+      Author: <h4>{{ todo.author }}</h4>
+      Todo Item: <p>{{ todo.todo }}</p>
     </div>
 
     <hr>
@@ -30,7 +30,7 @@
 import { onMounted } from 'vue';
 import todocrud from '../modules/todocrud'
 
-const {  editTodo, state, GetSpecificTodo, todo, todoId } = todocrud()
+const {  /* editTodo, */ handleEditTodo, state, GetSpecificTodo, todo, todoId } = todocrud()
 
 // Call GetSpecificTodo with onMounted Hook, and parse todoId to fetch the specific todo item. .value is used to access the value of the ref
 onMounted(() => {
@@ -38,27 +38,27 @@ onMounted(() => {
 })
 
 
-const handleEditTodo = async () => {
-  try {
-    // Ensure todoId is available
+// const handleEditTodo = async () => {
+//   try {
+//     // Ensure todoId is available
  
-    if (!todoId.value) {
-      throw new Error('Todo ID is missing')
-    }
+//     if (!todoId.value) {
+//       throw new Error('Todo ID is missing')
+//     }
 
-    // Call editTodo function to update todo item
-    await editTodo(todoId.value, {
-      author: state.newAuthor,
-      todo: state.newTodoItem
-    })
+//     // Call editTodo function to update todo item
+//     await editTodo(todoId.value, {
+//       author: state.newAuthor,
+//       todo: state.newTodoItem
+//     })
 
-    // Optionally, show success message to the user
-    console.log('Todo item updated successfully')
-  } catch (error) {
-    console.error('Error updating todo:', error)
-    // Optionally, show error message to the user
-  }
-}
+//     // Optionally, show success message to the user
+//     console.log('Todo item updated successfully')
+//   } catch (error) {
+//     console.error('Error updating todo:', error)
+//     // Optionally, show error message to the user
+//   }
+// }
 </script>
 
 <style lang="scss" scoped>
