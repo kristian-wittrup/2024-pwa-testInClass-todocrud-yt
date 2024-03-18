@@ -10,21 +10,9 @@
     <span> Test: {{ state.newTodoItem }} </span>
 
     <br>
+    <!-- week 12 start : DNR -->
 
-    <div v-for="todo in state.todos" :key="todo._id" class="card">
-      <router-link :to="`/todo/${todo._id}`">
-        <h4>
-          {{todo.author}}
-        </h4>
-        <p>
-          {{todo.todo}}
-        </p>
-        
-        <button @click="editTodo(todo._id)">Edit todo</button>
-      </router-link>
-      <button @click="deleteTodo(todo._id)">Delete todo</button>
-    </div>
-    
+
   </div>
 </template>
 <script setup>
@@ -32,7 +20,7 @@ import todocrud from '../modules/todocrud'
 import { onMounted } from 'vue'
 
 
-  const { state, GetAllTodos, newTodo, deleteTodo, editTodo  } = todocrud()
+  const { state, GetAllTodos, newTodo } = todocrud()
 
   onMounted(GetAllTodos) // fetches all todos on page load
 
