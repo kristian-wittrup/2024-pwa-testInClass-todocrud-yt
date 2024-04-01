@@ -1,14 +1,14 @@
-import { ref, /* computed */ } from 'vue'
-import { /* useRoute , useRouter  */} from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRoute, useRouter} from 'vue-router'
 
 const getTodos = () => {
 
   // Route and router are used to grab the todoId from the URL and then stored in computed so we can use it in the rest of the code
-  // const route = useRoute(); // Used to grab the todoId from the URL and then stored in computed so we can use it in the rest of the code
-  // const router = useRouter(); 
+   const route = useRoute(); // Used to grab the todoId from the URL and then stored in computed so we can use it in the rest of the code
+   const router = useRouter(); 
 
-  // const todoId = computed(() => route.params.id)
-  // console.log("todoId: ", todoId.value)
+  const todoId = computed(() => route.params.id)
+  console.log("todoId: ", todoId.value)
 
   const state = ref({
     newAuthor: '',
@@ -77,7 +77,24 @@ const getTodos = () => {
  */
 
  // Delete code here 
+const deleteTodo = async (_id) => {
+  try {
+    const response = await fetch(`http://localhost:3000/todos/delete/${_id}`, {
+      method: "DELETE" })
 
+    if (!response.ok) { 
+      throw new Error("Failed to delete todo");
+    }
+
+    await GetAllTodos();
+
+  }
+  
+
+  catch (error) {
+    console.log("Error deleting todo:", error);
+  }
+ }
 
 
   // Start here week 12
@@ -105,6 +122,48 @@ const getTodos = () => {
  * @returns {Promise<void>}
  */
 // Edit code here
+const handleEditTodo = async () => {
+  try {
+    if(!todoId.value) {
+      throw new Error("No todo ID provided");
+    }
+
+    await editTodo(todoId.value, {
+      author: state.value.newAuthor,
+      todo: state.value.newTodoItem
+    })
+  }
+
+  catch (error) {
+    console.log("Error editing todo:", error);
+  }
+}
+
+const editTodo = async (_id, data) => {
+  try {
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        // "auth-token": state.token
+      },
+      body: JSON.stringify(data)
+      };
+    
+      const url = `http://localhost:3000/todos/update/${_id}`;
+      const response = await fetch(url, requestOptions);
+
+      if (!response.ok) {
+        throw new Error("Failed to edit todo");
+      }
+
+      router.push('/todos')
+    }
+
+  catch (error) {
+    console.log("Error editing todo:", error);
+  }
+}
 
 
 
@@ -116,12 +175,38 @@ const getTodos = () => {
  */
 // Fetch specific todo item code here + todo ref array
 
+const todo = ref({});
+const GetSpecificTodo = async (todoId) => {
+  try {
+    const response = await fetch('http://localhost:3000/todos');
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch specific todo");
+    }
+
+    const data = await response.json();
+
+    const specificTodo = data.find(t => t._id === todoId)
+
+    todo.value = specificTodo;
+  }
+
+  catch(error) {
+    console.error(error);
+  }
+
+}
  
 
   return {
     state,
     GetAllTodos, 
     newTodo,
+    deleteTodo,
+    GetSpecificTodo,
+    todo, 
+    todoId,
+    handleEditTodo
     
   }
 }

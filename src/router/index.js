@@ -31,7 +31,11 @@ const router = createRouter({
       component: () => import(/* webpackChunkName: "about" */ '../views/TodosView.vue')
     },
       // for todo/:id
-    
+    {
+      path: '/todo/:id',
+      name: 'todo single',
+      component: () => import(/* webpackChunkName: "about" */ '../views/TodoDetail.vue')
+    }
   ]
 })
 

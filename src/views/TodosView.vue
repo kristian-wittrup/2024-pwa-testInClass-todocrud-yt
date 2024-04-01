@@ -11,6 +11,13 @@
 
     <br>
     <!-- week 12 start : DNR -->
+    <div v-for="todo in state.todos" :key="todo._id">
+      <router-link :to="`/todo/${todo._id}`">
+        <span>{{ todo.author }}</span>
+        <span>{{ todo.todo }}</span>
+        <button @click="deleteTodo(todo._id)">Delete</button>
+      </router-link>
+    </div>
 
 
   </div>
@@ -20,7 +27,7 @@ import todocrud from '../modules/todocrud'
 import { onMounted } from 'vue'
 
 
-  const { state, GetAllTodos, newTodo } = todocrud()
+  const { state, GetAllTodos, newTodo, deleteTodo } = todocrud()
 
   onMounted(GetAllTodos) // fetches all todos on page load
 
