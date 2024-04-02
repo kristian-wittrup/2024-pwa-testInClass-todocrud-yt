@@ -1,6 +1,9 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import  NavigationView  from "./components/NavigationView.vue"
+
+import { provideAuth } from './modules/users';
+provideAuth();
 </script>
 
 <template>

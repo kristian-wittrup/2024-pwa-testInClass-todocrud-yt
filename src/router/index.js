@@ -9,34 +9,41 @@ const router = createRouter({
       name: 'home',
       component: HomeView
     },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
-    },
-    // {
-    //   path: '/projects',
-    //   name: 'projects',
-    //   component: () => import('../views/ProjectView.vue')
-    // },
+ 
     {
       path: '/todos',
       name: 'todos',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ '../views/TodosView.vue')
+      component: () => import(/* webpackChunkName: "about" */ '../views/TodosView.vue'),
     },
-      // for todo/:id
     {
       path: '/todo/:id',
       name: 'todo single',
       component: () => import(/* webpackChunkName: "about" */ '../views/TodoDetail.vue')
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: () => import('../views/AboutView.vue'),
+      meta: { 
+        requiresAuth: true 
+      }
     }
   ]
+})
+
+router.beforeEach(async (to, from, next) => {
+  const isAuthenticated = localStorage.getItem('user')
+  console.log("is auth", isAuthenticated)
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  console.log("requires auth", requiresAuth)
+  if(!isAuthenticated && requiresAuth)
+  {
+    next('/')
+  }
+  else
+  {
+    next()
+  }
 })
 
 export default router
