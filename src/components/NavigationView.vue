@@ -2,6 +2,9 @@
 import { RouterLink } from 'vue-router'
 import { useAuth } from '../modules/users'
 
+import todocrud from '../modules/todocrud'
+const { swaggerLogin } = todocrud()
+
 const auth = useAuth()
 
 // import useUsers from '../modules/users'
@@ -16,6 +19,8 @@ const auth = useAuth()
   <RouterLink to="/about">About</RouterLink>
   <RouterLink to="/todos">Projects</RouterLink> <!-- changed path -->
 </nav>
+
+<button @click="swaggerLogin()">Swagger Login</button>
 
 <div v-if="!auth.isAuthenticated.value">
   <button @click="auth.logIn()">Log in</button>

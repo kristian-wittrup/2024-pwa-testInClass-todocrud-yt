@@ -11,12 +11,22 @@
 
     <br>
     <!-- week 12 start : DNR -->
-    <div v-for="todo in state.todos" :key="todo._id">
+<!--     <div v-for="todo in state.todos" :key="todo._id">
       <router-link :to="`/todo/${todo._id}`">
         <span>{{ todo.author }}</span>
         <span>{{ todo.todo }}</span>
         <button @click="deleteTodo(todo._id)">Delete</button>
       </router-link>
+    </div> -->
+    <div v-for="todo in state.todos" :key="todo.id">
+      <router-link :to="`/todo/${todo.id}`">
+        <p>{{ todo.id }}</p>
+        <p>{{ todo.name }}</p>
+        <p>{{ todo.description }}</p>
+        <p>{{ todo.price }}</p>
+        <p>{{ todo.inStock }}</p>
+      </router-link>
+      <button @click="deleteTodo(todo.id)">Delete</button>
     </div>
 
 

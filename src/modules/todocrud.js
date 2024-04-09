@@ -16,6 +16,33 @@ const getTodos = () => {
     todos: {}
   })
 
+  const swaggerLogin = async () => {
+    try {
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": "localStorage.lsToken"
+        },
+        body: JSON.stringify({
+          email: "kw@easv.dk",
+          password: "12345678"
+        })
+        }
+        await fetch("https://men-restapi-wds24.onrender.com/api/user/login", requestOptions)
+          .then(res => res.json())
+          .then(data => {
+            localStorage.setItem("lsToken", data.data.token)
+            console.log("lsToken", data.data.token)
+            console.log("lsStorage", localStorage.lsToken)
+          })
+      }
+      catch(error) {
+        console.error(error)
+      }
+    }
+  
+
 /**
  * Fetches all todo items from the server.
  * @returns {Promise<void>} A Promise that resolves once all todo items are successfully fetched from the server.
@@ -24,7 +51,7 @@ const getTodos = () => {
 // improved error handling with async/await and try/catch blocks. Better readability and maintainability.
   const GetAllTodos = async () => {
     try {
-      const response = await fetch("http://localhost:3000/todos");
+      const response = await fetch("https://men-restapi-wds24.onrender.com/api/products");
       const data = await response.json();
       state.value.todos = data;
     } catch(error) {
@@ -43,17 +70,22 @@ const getTodos = () => {
       const requestOptions = {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
-          // "auth-token": state.token
+          "Content-Type": "application/json",
+          "auth-token": localStorage.lsToken
         },
         body: JSON.stringify({
-          author: state.value.newAuthor,
-          todo: state.value.newTodoItem
+          //author: state.value.newAuthor,
+          //todo: state.value.newTodoItem
+          name: state.value.newAuthor,
+          description: state.value.newTodoItem,
+          price: 100,
+          inStock: true,
+          id: 12
         }) 
       };
   
       // Make the HTTP request
-      const response = await fetch("http://localhost:3000/todos/new", requestOptions);
+      const response = await fetch("https://men-restapi-wds24.onrender.com/api/products/", requestOptions);
   
       // Check if the request was successful
       if (!response.ok) {
@@ -77,10 +109,16 @@ const getTodos = () => {
  */
 
  // Delete code here 
-const deleteTodo = async (_id) => {
+const deleteTodo = async (id) => {
   try {
-    const response = await fetch(`http://localhost:3000/todos/delete/${_id}`, {
-      method: "DELETE" })
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": localStorage.lsToken
+      }
+    };
+    const response = await fetch(`https://men-restapi-wds24.onrender.com/api/products/${id}`, requestOptions)
 
     if (!response.ok) { 
       throw new Error("Failed to delete todo");
@@ -206,7 +244,8 @@ const GetSpecificTodo = async (todoId) => {
     GetSpecificTodo,
     todo, 
     todoId,
-    handleEditTodo
+    handleEditTodo,
+    swaggerLogin
     
   }
 }
